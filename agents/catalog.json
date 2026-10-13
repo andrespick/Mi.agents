@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "agents": [
+    {"name": "development", "description": "Desarrollo proporcional; flujo SDD para cambios sustanciales.", "instructions": "development.md", "skills": ["using-superpowers", "requirements-engineering-m", "technical-specification-m", "specification-review-m", "writing-plans", "brainstorming", "systematic-debugging", "test-driven-development", "executing-plans", "subagent-driven-development", "requesting-code-review", "receiving-code-review", "verification-before-completion", "using-git-worktrees", "finishing-a-development-branch", "dispatching-parallel-agents"], "mode": "all", "access": "development", "delegates": [], "models": {}},
+    {"name": "cybersecurity", "description": "Coordina auditorías de código con evidencia, cobertura e informe.", "instructions": "cybersecurity.md", "skills": ["security-audit-m"], "mode": "all", "access": "report", "delegates": ["security-auth", "security-input", "security-dependencies"], "models": {}},
+    {"name": "security-auth", "description": "Revisa autenticación, autorización y aislamiento entre usuarios.", "instructions": "security-auth.md", "skills": ["security-audit-m"], "mode": "subagent", "access": "read", "delegates": [], "models": {}},
+    {"name": "security-input", "description": "Revisa entradas, inyecciones, archivos y flujos de datos.", "instructions": "security-input.md", "skills": ["security-audit-m"], "mode": "subagent", "access": "read", "delegates": [], "models": {}},
+    {"name": "security-dependencies", "description": "Revisa dependencias, secretos y configuración de despliegue.", "instructions": "security-dependencies.md", "skills": ["security-audit-m"], "mode": "subagent", "access": "read", "delegates": [], "models": {}}
+  ]
+}

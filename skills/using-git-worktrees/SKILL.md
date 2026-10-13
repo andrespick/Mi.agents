@@ -1,6 +1,10 @@
 ---
 name: using-git-worktrees
 description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback
+disable-model-invocation: true
+metadata:
+  opencode/autoinvoke: "false"
+  opencode/slash: "true"
 ---
 
 # Using Git Worktrees

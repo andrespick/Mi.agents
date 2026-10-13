@@ -1,6 +1,10 @@
 ---
 name: finishing-a-development-branch
 description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work
+disable-model-invocation: true
+metadata:
+  opencode/autoinvoke: "false"
+  opencode/slash: "true"
 ---
 
 # Finishing a Development Branch

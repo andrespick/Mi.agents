@@ -1,9 +1,28 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, modifying behavior, or planning anything new, in software or out of it (a talk, a business, a renovation)."
+description: Use when a substantial new task has unresolved intent or design choices and discussing them would change the result. Skip clear small edits, explanations, inspections and tasks with an approved specification.
+disable-model-invocation: true
+metadata:
+  opencode/autoinvoke: "false"
+  opencode/slash: "true"
 ---
 
 # Brainstorming
+
+## Mi.agents scope
+
+Use this only when clarification changes the outcome. For a clear small task or
+an already approved plan, proceed with the authorized work. A request to explain
+or inspect is not a creative design request. Do not offer a visual companion or
+dispatch a reviewer unless the task benefits from it. User authorization already
+given in this session remains valid.
+
+For the desarrollo role, this skill only clarifies intent. Hand that intent to
+requirements-engineering-m; technical-specification-m owns the sole technical
+design, and specification-review-m checks it before writing-plans. The upstream
+written-design and builder-check steps below apply only when this skill is the
+chosen design author, not when that SDD chain is selected.
+
 
 You are very good at building. You build what you believe your human
 partner wants, and that belief is usually thinner than it feels. This
@@ -135,7 +154,7 @@ words. They can override it.
 |------|----------------------|------|
 | A quick, clear task | the request itself | do it |
 | A small change | in chat | build it through the normal workflow |
-| A project with a written design | a written design document | a full plan (for software: superpowers:writing-plans) |
+| A project with a written design | a written design document | a full plan (for software: writing-plans) |
 
 If it grows mid-task, stop, say so, and step up a size.
 
@@ -189,7 +208,8 @@ stays labeled throwaway, and keeping what it produced is a new request
 that comes back through this gate.
 
 After a project's document is approved, the next step is the plan. For
-software, invoke superpowers:writing-plans and no other skill.
+software, use the selected workflow: writing-plans directly for an approved design,
+or the Mi.agents SDD chain described above when requirements and review are required.
 </HARD-GATE>
 
 ## Red Flags

@@ -1,5 +1,5 @@
 ---
-name: technical-specification
+name: technical-specification-M
 description: Transform an approved requirements artifact into a compact, repository-grounded technical design before implementation planning. Use when requirements are READY and the change needs technical decisions, especially in existing codebases. Inspect the real project first, map requirement IDs to concrete components, interfaces, data, errors, and test levels, and produce a Superpowers-compatible design spec without implementation tasks or speculative architecture.
 ---
 
@@ -9,7 +9,7 @@ Create the technical source of truth that bridges approved behavior to Superpowe
 
 ## Preconditions
 
-Require a requirements artifact with `status: READY`. If none exists, invoke/use requirements engineering first instead of inventing requirements.
+Require a requirements artifact with `status: READY`. If none exists, invoke/use `requirements-engineering-M` first instead of inventing requirements.
 
 For an existing codebase, inspect relevant source, tests, configuration, schemas, and recent project conventions before deciding the design. Prefer existing patterns over new abstractions.
 

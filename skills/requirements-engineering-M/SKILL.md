@@ -1,5 +1,5 @@
 ---
-name: requirements-engineering
+name: requirements-engineering-M
 description: Convert raw client requests, feature ideas, tickets, bug reports, or incident descriptions into a compact, implementation-neutral requirements specification. Use before technical design or planning whenever requirements are informal, incomplete, emotional, ambiguous, scattered, or mixed with proposed solutions. Produces traceable functional requirements, only relevant non-functional requirements, acceptance criteria, edge cases, and blocking questions without inventing technology, architecture, business rules, or root causes.
 ---
 

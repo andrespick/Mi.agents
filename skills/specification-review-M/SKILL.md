@@ -1,6 +1,6 @@
 ---
-name: specification-review
-description: Independently review an SDD requirements artifact and technical specification before implementation planning. Use after technical-specification and before Superpowers writing-plans to detect missing coverage, contradictions, ambiguity, untestable criteria, unsupported repository assumptions, scope creep, regression risk, and broken requirement-to-test traceability. Produces only a compact machine-readable verdict and never implements or redesigns unless a precise fix is required.
+name: specification-review-M
+description: Independently review an SDD requirements artifact and technical specification before implementation planning. Use after technical-specification-M and before Superpowers writing-plans to detect missing coverage, contradictions, ambiguity, untestable criteria, unsupported repository assumptions, scope creep, regression risk, and broken requirement-to-test traceability. Produces only a compact machine-readable verdict and never implements or redesigns unless a precise fix is required.
 ---
 
 # Specification Review

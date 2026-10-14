@@ -1,0 +1,12 @@
+{
+  "name":"mi-opencode-router",
+  "version":"0.1.0",
+  "private":true,
+  "license":"MIT",
+  "type":"module",
+  "main":"src/index.mjs",
+  "exports":"./src/index.mjs",
+  "engines":{"node":">=24"},
+  "scripts":{"test":"node --test test/*.test.mjs","check":"node --check src/index.mjs && node --check src/adapter.mjs && node --check src/runtime.mjs"},
+  "dependencies":{"opencode-swarm":"7.197.1","proper-lockfile":"4.1.2"}
+}

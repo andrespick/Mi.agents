@@ -274,3 +274,11 @@ una auditoría siempre debe indicar evidencia, alcance y exclusiones.
 
 El alcance de las comprobaciones realizadas está en
 [VALIDATION.md](docs/VALIDATION.md).
+
+## Router automático, solo OpenCode
+
+La extensión local [Mi.router](opencode/router/README.md) reutiliza Swarm para
+seleccionar Luna/Sol/Astra mediante la suscripción OpenAI y trabajadores Luna/Haiku,
+con escalado por evidencia QA, fallback de saldo, límites y recuperación.
+Su instalación es independiente de los adaptadores de Codex; consulta esa guía
+para comandos, conexiones, backups y alcance de las pruebas.

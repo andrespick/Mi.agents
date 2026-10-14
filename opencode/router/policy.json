@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "models": {
+    "router": {"providerID":"openai","id":"gpt-6-luna","variant":"none"},
+    "clarify": {"providerID":"openai","id":"gpt-6-luna","variant":"low"},
+    "luna": {"providerID":"openai","id":"gpt-6-luna","variant":"high"},
+    "haiku": {"providerID":"anthropic","id":"claude-haiku-5-5","variant":"high"},
+    "sol": {"providerID":"openai","id":"gpt-6.1-sol","variant":"high"},
+    "test": {"providerID":"openai","id":"gpt-6.1-sol","variant":"medium"},
+    "astra": {"providerID":"openai","id":"gpt-6-astra","variant":"high"}
+  },
+  "limits": {"requests":300,"minutes":120,"tokens":1500000,"haikuUSD":5,"parallel":3,"transientRetries":2},
+  "qualityAttempts": {"worker":3,"sol":3,"astra":2}
+}

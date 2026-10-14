@@ -56,4 +56,13 @@ class RouterSetupTests(unittest.TestCase):
             dest.write_bytes(b'user edits')
             with self.assertRaises(ValueError):mod.restore(backup)
 
+    def test_readiness_waits_for_native_async_plugin_loading(self):
+        replies=iter([{'data':[]},{'data':[{'id':'mi-opencode-router','state':{'status':'loading'}}]},{'data':[{'id':'mi-opencode-router','state':{'status':'active'}}]}])
+        sleeps=[]
+        self.assertTrue(mod.wait_active('test',lambda *a:next(replies),sleeps.append))
+        self.assertEqual(len(sleeps),2)
+
+    def test_readiness_never_accepts_a_failed_plugin(self):
+        with self.assertRaises(ValueError):mod.wait_active('test',lambda *a:{'data':[{'id':'mi-opencode-router','state':{'status':'failed'}}]},lambda _:None)
+
 if __name__=='__main__':unittest.main()

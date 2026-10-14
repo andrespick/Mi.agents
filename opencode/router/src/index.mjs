@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-import swarm from 'opencode-swarm';
+import {loadSwarm} from './swarm-compat.mjs';
 import {RouterRuntime} from './runtime.mjs';
 import {FileStorage} from './storage.mjs';
 import {startEvents} from './events.mjs';
@@ -17,12 +17,13 @@ export default {
     // Security hooks register first. Any initialization error keeps these guards
     // for this lifecycle; deployments validate readiness before use.
     await installGuards(rt);
+    const {default:swarm}=await loadSwarm();
     const cleanupSwarm=await swarm.setup(swarmContext(rt));
     await installRouting(rt);
     const stopEvents=startEvents(rt);
     await ctx.storage.set('router:ready',{version:'0.1.0',swarm:'7.197.1',host:ctx.app.version});
     return async()=>{
-      await ctx.storage.set('router:ready',null);
+      await ctx.storage.remove('router:ready').catch(()=>{});
       await stopEvents();
       if(cleanupSwarm) await cleanupSwarm();
       for(const registration of rt.registrations.reverse()) await registration.dispose();

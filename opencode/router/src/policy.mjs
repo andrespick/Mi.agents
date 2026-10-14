@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual,randomUUID } from 'node:crypto';
 
 export const POLICY = JSON.parse(readFileSync(new URL('../policy.json', import.meta.url), 'utf8'));
 export const modelString = m => `${m.providerID}/${m.id}#${m.variant}`;
@@ -8,7 +8,7 @@ export const roleOf = agent => {
   return ['test_engineer','architect','coder','reviewer','critic','explorer','sme'].find(role=>id===role||id.endsWith('_'+role))??id;
 };
 export function createRun(id, now=Date.now()) {
-  return {version:1,id,status:'running',started:now,worker:'balanced',haikuDisabled:false,tasks:{},calls:{},children:{},requests:0,tokens:0,haikuUSD:0,events:[],limits:{...POLICY.limits}};
+  return {version:1,id,epoch:randomUUID(),status:'running',started:now,worker:'balanced',haikuDisabled:false,tasks:{},calls:{},children:{},requests:0,tokens:0,haikuUSD:0,events:[],limits:{...POLICY.limits}};
 }
 export function taskFor(run,id) {
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$/.test(id) || ['__proto__','constructor','prototype'].includes(id)) throw new Error('Invalid task ID');

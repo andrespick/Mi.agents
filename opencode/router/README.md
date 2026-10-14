@@ -1,6 +1,8 @@
 # Mi.router para OpenCode
 
-Extensión local de **OpenCode 2.0.29** que envuelve **opencode-swarm 7.197.1** (MIT). Una única copia de Swarm por proceso, sin modificar su código ni su caché. Codex no usa esta extensión.
+Extensión local de **OpenCode 2.0.29** que envuelve **opencode-swarm 7.197.1** (MIT). Codex no usa esta extensión. Conserva intactos la entrada original del paquete y la caché npm; genera una entrada privada con correcciones V2 versionadas y comprobadas.
+
+`src/swarm-compat.mjs` exige versión y SHA-256 exactos del bundle publicado antes de generar `dist/index.mi-router.mjs` en la dependencia local de esta biblioteca. Corrige cuatro expresiones: los dos traductores de herramientas solo niegan valores `false`; un éxito terminal del turno actual domina un error anterior; y el terminal se busca después del último mensaje de usuario. Hay pruebas ejecutando esas funciones reales. El instalador prepara y valida esta entrada antes de activar la configuración; se regenera tras `npm ci`. Cambiar la versión de Swarm requiere revisar esta adaptación. Su licencia MIT permanece junto al paquete.
 
 ## Usarlo
 
@@ -70,7 +72,7 @@ python scripts/setup_router.py --apply
 
 El primer comando Python es una simulación. El segundo conserva configuración ajena, sustituye el plugin Swarm suelto por esta extensión, añade los tres agentes de entrada, fija las conexiones existentes y recarga OpenCode. Busca por defecto las etiquetas `OpenAI Cuenta` (OAuth) y `Anthropic API` (key); para otras etiquetas utiliza `--openai-credential ID --anthropic-credential ID`. No obtiene nuevos accesos ni activa la API de OpenAI.
 
-El instalador imprime el directorio de backup en `.local/router-backups`. Para restaurar sus bytes exactos:
+El instalador imprime el directorio de backup en `.local/router-backups` y verifica que OpenCode confirme el plugin activo; si la recarga falla, restaura esos archivos. Para restaurar sus bytes exactos manualmente:
 
 ```powershell
 python scripts/setup_router.py --restore RUTA_DEL_BACKUP --apply
@@ -86,3 +88,5 @@ Se ejecutaron pruebas Node de política, OAuth/clave API, selección concurrente
 El agotamiento de saldo y los fallos QA se prueban de forma controlada, sin gastar deliberadamente el saldo de Haiku. No se ha desarrollado una feature completa con tres LLM reales como parte de la instalación. El planificador y el contenido de las revisiones siguen dependiendo de los modelos; los bloqueos de permisos, autenticación, límites y selección no dependen de que el modelo recuerde el prompt.
 
 Fuentes: [plugins V2](https://opencode.ai/v2/docs/build/plugins), [agentes](https://opencode.ai/v2/docs/agents/), [modelos](https://opencode.ai/v2/docs/models/), [proveedores](https://opencode.ai/v2/docs/providers/), [Swarm 7.197.1](https://github.com/ZaxbyHub/opencode-swarm/tree/v7.197.1), [Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview). La integración usa las firmas del SDK oficial 2.0.29 y el código publicado de ambas versiones.
+
+El registro de comprobaciones, correcciones de revisión y límites está en [opencode-router-validation.md](../../docs/opencode-router-validation.md).

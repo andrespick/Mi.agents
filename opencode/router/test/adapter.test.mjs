@@ -53,3 +53,31 @@ test('entry and read-only restrictions remove mutation tools, plus permission ba
   await rt.store.transact('root',r=>{r.readOnly=true;});
   await assert.rejects(executeManaged(rt,'shell',async()=>({}),{command:'x'},context('shell')),/Read-only/);
 });
+test('readonly instructions for a reviewer never make the controller readonly',async()=>{
+  const h=host(),rt=new RouterRuntime(h.ctx,binding);await installRouting(rt);
+  await rt.bind('root','root',[],'architect');await rt.bind('review','root',['1.1'],'reviewer');
+  h.sessions.set('root',{id:'root',agent:'architect',location:{directory:process.cwd()}});
+  h.sessions.set('review',{id:'review',parentID:'root',agent:'reviewer',location:{directory:process.cwd()}});
+  await h.hooks.prompt[0]({sessionID:'review',prompt:{text:'Read-only review of the implementation'}});
+  assert.notEqual((await rt.store.read('root')).readOnly,true);
+});
+test('cancelled tool settlement cannot turn cancellation into a resumable pause',async()=>{
+  const h=host(),rt=new RouterRuntime(h.ctx,binding);
+  await assert.rejects(executeManaged(rt,'shell',async()=>{await rt.control('root','cancel');throw new Error('aborted');},{},context('cancelled-call')));
+  assert.equal((await rt.store.read('root')).status,'cancelled');
+  await assert.rejects(rt.control('root','resume'),/Cancelled/);
+});
+test('pause-originated tool abort preserves pause instead of cancelling the run',async()=>{
+  const h=host(),rt=new RouterRuntime(h.ctx,binding),abort=new AbortController();
+  const c={...context('paused-call'),signal:abort.signal};
+  await assert.rejects(executeManaged(rt,'shell',async()=>{await rt.control('root','pause');abort.abort();await Promise.resolve();throw new Error('aborted');},{},c));
+  await new Promise(resolve=>setTimeout(resolve,10));
+  assert.equal((await rt.store.read('root')).status,'paused');
+});
+test('settlement from a cancelled epoch cannot write into a new run',async()=>{
+  const h=host(),rt=new RouterRuntime(h.ctx,binding);
+  const original=async()=>{await rt.control('root','new');return {content:'old operation ended'};};
+  await executeManaged(rt,'read',original,{},context('old-epoch'));
+  const fresh=await rt.store.read('root');
+  assert.equal(fresh.status,'running');assert.equal(fresh.requests,0);assert.deepEqual(fresh.calls,{});
+});

@@ -81,6 +81,8 @@ export async function installRouting(rt) {
   rt.registrations.push(await ctx.session.hook('prompt',async e=>{
     const info=await ctx.session.get({sessionID:e.sessionID});
     let b=await rt.bindingFor(e.sessionID);
+    const current=await rt.store.read(b.root);
+    if(b.epoch && current?.epoch!==b.epoch) throw new Error('Stale run prompt');
     const role=roleOf(info.agent);
     const directory=(await ctx.session.get({sessionID:b.root})).location?.directory??ctx.location.directory;
     const ids=await rt.tasksInPrompt(e.prompt.text,directory);
@@ -95,7 +97,7 @@ export async function installRouting(rt) {
         if(r.owner && r.owner!==rt.boot && Object.values(r.calls).some(c=>c.status==='uncertain')) {r.status='paused';r.reason='Recovery: reconcile uncertain operations';}
         r.owner=rt.boot;
       }
-      if(/\b(?:no\s+(?:modifiques|modificar|hagas?\s+cambios)|solo\s+(?:lee|lectura)|read[ -]only|do not (?:modify|edit))\b/i.test(e.prompt.text)) r.readOnly=true;
+      if(b.root===e.sessionID && /\b(?:no\s+(?:modifiques|modificar|escribas|edites|hagas?\s+cambios)|solo\s+(?:lee|lectura)|read[ -]only|do not (?:modify|edit))\b/i.test(e.prompt.text)) r.readOnly=true;
       if(b.root!==e.sessionID) {
         const running=Object.entries(r.children).filter(([id,c])=>id!==e.sessionID && c.role==='coder' && c.status==='active');
         if(role==='coder' && running.length>=r.limits.parallel) throw new Error('Parallel coder limit reached; queue this task');
@@ -120,6 +122,7 @@ export async function installRouting(rt) {
   for(const name of ['context','generate','compaction']) rt.registrations.push(await ctx.session.hook(name,async e=>{
     const b=await rt.bindingFor(e.sessionID),run=await rt.store.read(b.root);
     if(!run) return;
+    if(b.epoch && b.epoch!==run.epoch) throw new Error('Stale run context');
     if(run.status!=='running') throw new Error(`Router ${run.status}: ${run.reason??''}`);
     if(!Object.values(POLICY.models).some(m=>m.id===e.model.id && m.providerID===e.model.providerID)) throw new Error('Model outside approved router policy');
     await rt.account(e.sessionID);
@@ -154,6 +157,7 @@ export async function installRouting(rt) {
     }
     editor.add({name:'router_route',options:{codemode:false},description:'Clasifica y selecciona agente/modelo. Solo router de entrada.',input:{type:'object',properties:{route:{enum:['query','small','complex','security','ambiguous']},reason:{type:'string'},readOnly:{type:'boolean'}},required:['route','reason','readOnly'],additionalProperties:false},execute:async(input,c)=>{
       if(roleOf(c.agent)!=='mi-router') throw new Error('Only entry router can classify');
+      if(c.signal?.aborted) throw new Error('Router classification cancelled');
       return content(await rt.route(c.sessionID,input.route,input.reason,input.readOnly));
     }});
     editor.add({name:'router_status',options:{codemode:false},description:'Estado durable, decisiones y escalamiento actual; lectura.',input:{type:'object',properties:{},additionalProperties:false},execute:async(_,c)=>content(await rt.control((await rt.bindingFor(c.sessionID)).root,'status'))});
@@ -171,7 +175,7 @@ export async function executeManaged(rt,name,execute,input,context) {
   const {ctx}=rt,b=await rt.bindingFor(context.sessionID);
   let child;
   const key=`tool:${context.id}`;
-  await rt.store.transact(b.root,r=>{
+  const epoch=await rt.store.transact(b.root,r=>{
     if(r.status!=='running') throw new Error(`Router ${r.status}`);
     if(r.readOnly && !safeRead(name)) throw new Error('Read-only execution');
     if(b.root!==context.sessionID && isNativeSubagent(name)) throw new Error('Workers cannot delegate');
@@ -179,10 +183,11 @@ export async function executeManaged(rt,name,execute,input,context) {
     r.repetitions??={};r.repetitions[hash]=(r.repetitions[hash]??0)+1;
     if(r.repetitions[hash]>8) {r.status='paused';r.reason='Repeated tool loop';throw new Error('Repeated tool loop');}
     admit(r,key);r.calls[key].tool=name;
+    return r.epoch;
   });
   const wrappedContext={...context,progress:async v=>{if(v.sessionID) child=v.sessionID;await context.progress(v);}};
   const run=async()=>execute(input,wrappedContext);
-  const onAbort=()=>{void rt.control(b.root,'cancel').catch(()=>{});};
+  const onAbort=()=>{void rt.control(b.root,'cancel-if-running',[epoch]).catch(()=>{});};
   context.signal?.addEventListener('abort',onAbort,{once:true});
   try {
     let result;
@@ -194,14 +199,16 @@ export async function executeManaged(rt,name,execute,input,context) {
         result=await rt.local.run({root:b.root,parent:context.sessionID,call:key},()=>execute({...input,sessionID:child,model:modelString(model),prompt:'Continúa la misma tarea con el estado actual; Haiku sin saldo. '+input.prompt},wrappedContext));
       } else throw error;
     }
-    await rt.store.transact(b.root,r=>{r.calls[key].status='completed';if(child && r.children[child]) r.children[child].status='idle';});
+    await rt.store.transact(b.root,r=>{if(r.epoch!==epoch) return;r.calls[key].status='completed';if(child && r.children[child]) r.children[child].status='idle';});
     if(child) await rt.account(child);
     const directory=(await ctx.session.get({sessionID:b.root})).location?.directory??ctx.location.directory;
     await rt.readEvidence(b.root,directory);
     return result;
   } catch(error) {
     await rt.store.transact(b.root,r=>{
-      r.calls[key].status='uncertain';r.status='paused';r.reason=`Operation ${key} failed; inspect before reconcile`;
+      if(r.epoch!==epoch) return;
+      r.calls[key].status=r.status==='cancelled'?'cancelled':'uncertain';
+      if(r.status==='running') {r.status='paused';r.reason=`Operation ${key} failed; inspect before reconcile`;}
       if(child && r.children[child]) r.children[child].status='failed';
     });
     throw error;

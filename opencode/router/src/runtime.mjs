@@ -23,16 +23,18 @@ export class RouterRuntime {
     const previous=await this.ctx.storage.get(`session:${id}`);
     const b={...previous,root,tasks:tasks.length?tasks:previous?.tasks??[],role};
     if(directory??previous?.directory) b.directory=directory??previous.directory;
-    await this.ctx.storage.set(`session:${id}`,b);
-    await this.store.transact(root,r=>{
+    b.epoch=await this.store.transact(root,r=>{
       for(const task of b.tasks) taskFor(r,task);
       if(id!==root) r.children[id]={...r.children[id],role,tasks:b.tasks,status:r.children[id]?.status??'registered'};
+      return r.epoch;
     });
+    await this.ctx.storage.set(`session:${id}`,b);
     return b;
   }
   async select(id,role,ids=[]) {
     const b=await this.bindingFor(id);
     let selected=await this.store.transact(b.root,r=>{
+      if(b.epoch && b.epoch!==r.epoch) throw new Error('Stale run child');
       const choices=(ids.length?ids:b.tasks.length?b.tasks:['direct']).map(t=>modelFor(r,t,role));
       const rank=m=>m.id===POLICY.models.astra.id?2:m.id===POLICY.models.sol.id?1:0;
       return choices.reduce((a,c)=>rank(c)>rank(a)?c:a);
@@ -56,6 +58,8 @@ export class RouterRuntime {
   async guardHTTP(event) {
     const provider=event.model.providerID;
     if(!['openai','anthropic'].includes(provider)) return;
+    const sessionBinding=await this.bindingFor(event.sessionID),sessionRun=await this.store.read(sessionBinding.root);
+    if(sessionBinding.epoch && sessionRun?.epoch!==sessionBinding.epoch) throw new Error('Stale run request');
     if(provider==='anthropic' && event.model.id!==POLICY.models.haiku.id) throw new Error('HAIKU_ONLY: Anthropic restricted to configured Haiku');
     if(provider==='anthropic') {
       const b=await this.bindingFor(event.sessionID),run=await this.store.read(b.root);
@@ -90,7 +94,7 @@ export class RouterRuntime {
     this.providerErrors.set(id,kind);
     await this.ctx.storage.set(`provider-error:${id}`,{kind,at:Date.now()});
     if(this.providerErrors.size>512) this.providerErrors.delete(this.providerErrors.keys().next().value);
-    await this.store.transact(b.root,r=>{for(const t of b.tasks.length?b.tasks:['direct']) providerFailure(r,t,kind);});
+    await this.store.transact(b.root,r=>{if(b.epoch && r.epoch!==b.epoch) return;for(const t of b.tasks.length?b.tasks:['direct']) providerFailure(r,t,kind);});
     return kind;
   }
   async providerErrorFor(id) {return (await this.ctx.storage.get(`provider-error:${id}`))?.kind??this.providerErrors.get(id);}
@@ -121,6 +125,7 @@ export class RouterRuntime {
   async account(id) {
     const b=await this.bindingFor(id), info=await this.ctx.session.get({sessionID:id});
     await this.store.transact(b.root,r=>{
+      if(b.epoch && r.epoch!==b.epoch) return;
       const totals=info.tokens??{},current=Object.values(totals).filter(v=>typeof v==='number').reduce((a,v)=>a+v,0)+(totals.cache?.read??0)+(totals.cache?.write??0);
       r.accounting??={}; const old=r.accounting[id]??{tokens:0,cost:0};
       r.tokens+=Math.max(0,current-old.tokens);
@@ -176,10 +181,11 @@ export class RouterRuntime {
       await this.bind(root,root,[],'router');
       await this.ctx.session.switchAgent({sessionID:root,agent:'mi-router'});
       await this.ctx.session.switchModel({sessionID:root,model:POLICY.models.router});
-    } else if(['pause','cancel'].includes(action)) {
+    } else if(['pause','cancel','cancel-if-running'].includes(action)) {
       const ids=await this.store.transact(root,r=>{
+        if(action==='cancel-if-running' && (r.status!=='running'||args[0] && args[0]!==r.epoch)) return [];
         r.status=action==='pause'?'paused':'cancelled';r.reason=action;
-        return [...Object.keys(r.children),root];
+        return [...Object.keys(r.children).filter(id=>!['removed','succeeded','idle'].includes(r.children[id].status)),root];
       });
       const results=await Promise.allSettled(ids.map(sessionID=>this.ctx.session.interrupt({sessionID,continue:false})));
       const failed=results.map((v,i)=>v.status==='rejected'?ids[i]:null).filter(Boolean);

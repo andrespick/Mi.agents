@@ -1,4 +1,5 @@
 import {createRun} from './policy.mjs';
+import {randomUUID} from 'node:crypto';
 // All location-owned mutations pass through one queue; storage is host-durable.
 export class StateStore {
   constructor(storage) {this.storage=storage;this.tail=Promise.resolve();}
@@ -6,6 +7,7 @@ export class StateStore {
     const transaction=async()=>{
       const key=`run:${id}`;
       const state=await this.storage.get(key) ?? createRun(id);
+      state.epoch??=randomUUID();
       try {return await fn(state);}
       finally {await this.storage.set(key,state);}
     };

@@ -122,6 +122,10 @@ opencode debug config
 opencode debug agents
 ```
 
+Si el listado conserva una configuración anterior, ejecuta `opencode reload` y
+abre una sesión nueva. Una sesión existente puede conservar el agente y modelo
+que ya había seleccionado.
+
 El coordinador permite editar `docs/security/**`; los revisores deniegan edición,
 shell y nueva delegación. Son reglas de herramientas de OpenCode, no aislamiento
 del sistema operativo ni garantía para herramientas externas añadidas después.
@@ -267,3 +271,6 @@ registro nativo. No instalamos automatizaciones de sesión para forzar skills.
 Consulta [UPSTREAM.md](docs/UPSTREAM.md) antes de actualizar Superpowers para
 conservar las adaptaciones locales. No hay certificación de seguridad automática:
 una auditoría siempre debe indicar evidencia, alcance y exclusiones.
+
+El alcance de las comprobaciones realizadas está en
+[VALIDATION.md](docs/VALIDATION.md).

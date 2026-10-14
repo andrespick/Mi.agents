@@ -35,3 +35,9 @@ También se verificó que una finalización del estado anterior no escriba sobre
 - No se agotó saldo real de Haiku ni se desarrolló una feature completa con tres LLM reales. Cuota y fallos QA se verifican mediante pruebas controladas. La semántica de planes y revisiones depende del modelo; el alcance de los controles está en el README.
 
 No quedan hallazgos menores aplazados de esa revisión. Las limitaciones de validación anteriores se conservan expresamente.
+
+## Instalación definitiva
+
+El plugin está activo desde `C:\Users\andre\.agents\opencode\router\index.js`. Se ejecutaron las 53 pruebas sobre la biblioteca canónica. OpenCode tiene `mi-router` como agente predeterminado; se recomienda iniciar una sesión nueva.
+
+El backup que permite volver al estado anterior a toda esta instalación está en `C:\Users\andre\.agents\.local\router-backups\pre-router-20261014`. Las copias intermedias y el registro de instalación se conservaron en `.local/router-install-history`; no son la copia recomendada para desinstalar.

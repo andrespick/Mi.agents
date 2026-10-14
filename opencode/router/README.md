@@ -79,6 +79,8 @@ python scripts/setup_router.py --restore RUTA_DEL_BACKUP --apply
 opencode reload
 ```
 
+En este equipo, la instalación definitiva está en `C:\Users\andre\.agents\opencode\router`; el backup anterior a toda la instalación es `C:\Users\andre\.agents\.local\router-backups\pre-router-20261014`. Para empezar, abre una sesión nueva con el agente `mi-router` y comprueba `/router status`.
+
 Si hay modificaciones posteriores, la restauración se niega a sobrescribirlas. Conserva el backup y revisa el diff. No edites `node_modules` ni la caché: modifica `src/` o `policy.json`, ejecuta pruebas y recarga. El instalador general de skills conserva este plugin y su agente predeterminado.
 
 ## Verificación y límites de la validación

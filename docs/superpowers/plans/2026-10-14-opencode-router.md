@@ -36,6 +36,6 @@ Interfaces: instalador conserva configuración ajena y crea binding local ignora
 - [x] Pruebas RED de preservación/backup/restauración y ruta del plugin.
 - [x] Implementar; pruebas Node/Python y carga nativa; Expected: plugin y comandos presentes.
 - [x] Revisión independiente completa y corrección de hallazgos importantes con regresiones.
-- [ ] Activar en biblioteca canónica con backup y verificar configuración efectiva.
+- [x] Activar en biblioteca canónica con backup y verificar configuración efectiva.
 
 Ledger: .superpowers/sdd/2026-10-14-opencode-router/progress.md.

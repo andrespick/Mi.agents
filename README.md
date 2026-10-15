@@ -277,8 +277,8 @@ El alcance de las comprobaciones realizadas está en
 
 ## Router automático, solo OpenCode
 
-La extensión local [Mi.router](opencode/router/README.md) reutiliza Swarm para
-seleccionar Luna/Sol/Astra mediante la suscripción OpenAI y trabajadores Luna/Haiku,
-con escalado por evidencia QA, fallback de saldo, límites y recuperación.
-Su instalación es independiente de los adaptadores de Codex; consulta esa guía
-para comandos, conexiones, backups y alcance de las pruebas.
+El módulo **Mi.router** usa Swarm para seleccionar automáticamente modelos y
+coordinar varios agentes, con reintentos, escalamiento y cambio de Haiku a Luna
+si se agota el saldo. Luna, Sol y Astra utilizan la suscripción de OpenAI.
+Para instalación, uso y más información, consulta el
+[README de router](opencode/router/README.md).

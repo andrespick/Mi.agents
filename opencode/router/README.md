@@ -59,9 +59,10 @@ Tras una operación incierta se pausa. Inspecciona primero el diff, las pruebas,
 
 ## Instalar o actualizar desde la biblioteca
 
-En PowerShell, desde `C:\Users\andre\.agents`:
+En PowerShell, desde la biblioteca compartida:
 
 ```powershell
+Set-Location "$HOME/.agents"
 cd opencode/router
 npm ci --ignore-scripts --no-audit --no-fund
 npm test
@@ -79,7 +80,7 @@ python scripts/setup_router.py --restore RUTA_DEL_BACKUP --apply
 opencode reload
 ```
 
-En este equipo, la instalación definitiva está en `C:\Users\andre\.agents\opencode\router`; el backup anterior a toda la instalación es `C:\Users\andre\.agents\.local\router-backups\pre-router-20261014`. Para empezar, abre una sesión nueva con el agente `mi-router` y comprueba `/router status`.
+Después de instalar, abre una sesión nueva con `mi-router` y comprueba `/router status`. Conserva localmente la ruta del backup que imprime el instalador para una posible restauración.
 
 Si hay modificaciones posteriores, la restauración se niega a sobrescribirlas. Conserva el backup y revisa el diff. No edites `node_modules` ni la caché: modifica `src/` o `policy.json`, ejecuta pruebas y recarga. El instalador general de skills conserva este plugin y su agente predeterminado.
 

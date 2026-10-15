@@ -1,3 +1,5 @@
 #!/bin/sh
-# Optional hook for this library only. Activate explicitly; see README.
-exec python scripts/setup_agents.py --validate
+# Local library validation and staged publication checks. Never echo secrets.
+set -eu
+python scripts/setup_agents.py --validate
+exec python scripts/check_publication.py --check-identity

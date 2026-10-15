@@ -1,6 +1,6 @@
 # Router de OpenCode aprobado
 
-Fuente de requisitos: conversación aprobada por Andrés el 14 de octubre de 2026.
+Fuente de requisitos: requisitos aprobados para el desarrollo del router.
 Codex y las skills compartidas conservan su comportamiento.
 
 - Entrada Luna none; una segunda clasificación low si hay ambigüedad. Consultas y cambios pequeños no fuerzan SDD.

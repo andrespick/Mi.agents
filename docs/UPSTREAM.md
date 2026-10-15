@@ -12,3 +12,8 @@ en -m minúscula. security-audit-m y los adaptadores son propios de Mi.agents.
 Una actualización de upstream debe revisarse como diff. No reemplaces skills/
 completo: perderías estas adaptaciones y las cuatro skills propias. Después de
 actualizar ejecuta el validador, las pruebas y vuelve a instalar los adaptadores.
+
+Adaptación de privacidad: la procedencia conserva repositorio, versión y commit,
+sin fechas de instalación personales. El companion usa atribución de texto local
+y no solicita el logo remoto; conserva créditos y licencia upstream. Al actualizar,
+verifica esta adaptación con `node --test tests/companion-privacy.test.cjs`.

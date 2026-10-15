@@ -1,0 +1,23 @@
+name: Publication privacy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7, pinned
+        with:
+          persist-credentials: false
+      - name: Check files without printing credential values
+        run: python3 scripts/check_publication.py --all
+      - name: Test publication safeguards
+        run: python3 -m unittest discover -s tests -p test_publication.py -v

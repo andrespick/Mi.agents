@@ -3,3 +3,5 @@
 *.json text eol=lf
 *.yaml text eol=lf
 hooks/* text eol=lf
+# Preserve existing Windows line endings in Node companion scripts.
+*.cjs whitespace=cr-at-eol

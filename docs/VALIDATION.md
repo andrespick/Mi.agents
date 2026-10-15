@@ -1,6 +1,6 @@
 # Comprobaciones de instalación
 
-Fecha local: 13 de octubre de 2026, America/Bogota.
+Validación de referencia: 13 de octubre de 2026.
 
 - Python 3.14: 16 pruebas pasan, incluyendo conservación de configuración,
   idempotencia global/proyecto, cambio de preset, conflictos, rollback exacto,

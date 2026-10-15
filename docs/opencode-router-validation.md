@@ -7,9 +7,9 @@ Versiones comprobadas: OpenCode 2.0.29; Swarm 7.197.1, fuente `b94acae84ddd750a4
 - 30 pruebas Node: política de calidad 3/3/2, separación de fallos técnicos, OAuth real frente a clave API, selección concurrente por sesión, estado con bloqueo entre instancias, fallback en la misma sesión, cancelación, recuperación y compatibilidad ejecutando funciones reales del bundle Swarm.
 - 23 pruebas Python: biblioteca previa (16) e instalador del router (7), conservación de configuración ajena, colisiones, backup/restauración exacta y espera de carga asíncrona nativa.
 - Plugin `mi-opencode-router` confirmado activo mediante `plugin.list`; agentes de Swarm y comando `/router` registrados.
-- Sesión real `ses_ec414b9a6ffeq8DQjcdANtqRoX`: clasificación y respuesta de consulta.
-- Sesión real `ses_ec411f4b5ffeqAQgImAGiEB3Yx`: payload de clasificador `gpt-6-luna` / `none`, selección complex y payload posterior `gpt-6.1-sol` / `high`.
-- Sesión real con entrada privada corregida `ses_ec3395f57ffeIPYqvrfXUagWA4`: clasificación query con `readOnly:true`, respuesta `ROUTER_LISTO`. `/router status` ejecutado nativamente sin otra generación.
+- Sesión real `consulta-01`: clasificación y respuesta de consulta.
+- Sesión real `coordinacion-01`: payload de clasificador `gpt-6-luna` / `none`, selección complex y payload posterior `gpt-6.1-sol` / `high`.
+- Sesión real con entrada privada corregida `compatibilidad-01`: clasificación query con `readOnly:true`, respuesta `ROUTER_LISTO`. `/router status` ejecutado nativamente sin otra generación.
 
 ## Revisión independiente y correcciones
 
@@ -38,6 +38,6 @@ No quedan hallazgos menores aplazados de esa revisión. Las limitaciones de vali
 
 ## Instalación definitiva
 
-El plugin está activo desde `C:\Users\andre\.agents\opencode\router\index.js`. Se ejecutaron las 53 pruebas sobre la biblioteca canónica. OpenCode tiene `mi-router` como agente predeterminado; se recomienda iniciar una sesión nueva.
+El plugin se instala desde `~/.agents/opencode/router/index.js`. Se ejecutaron las 53 pruebas sobre la biblioteca canónica. OpenCode tiene `mi-router` como agente predeterminado; se recomienda iniciar una sesión nueva.
 
-El backup que permite volver al estado anterior a toda esta instalación está en `C:\Users\andre\.agents\.local\router-backups\pre-router-20261014`. Las copias intermedias y el registro de instalación se conservaron en `.local/router-install-history`; no son la copia recomendada para desinstalar.
+Las rutas concretas de los backups y el historial de instalación se conservan en notas locales bajo `.local/`, fuera de Git. Para restaurar, utiliza el backup que mostró el instalador y consulta la guía del router.
